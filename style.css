@@ -1,0 +1,425 @@
+/* Iʿânat al-Mustafîd bi-charh Kitâb at-Tawhîd — feuille de style commune */
+@import url("https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap");
+
+:root {
+  --taille: 19px;
+  --fond: #f7f2e8;
+  --fond-2: #efe7d6;
+  --papier: #fffdf8;
+  --encre: #2a2418;
+  --encre-2: #5e5442;
+  --encre-3: #8a7e68;
+  --accent: #1f5c4a;
+  --accent-2: #2f7a63;
+  --or: #a9822f;
+  --or-clair: #e6d3a3;
+  --filet: #e2d7c0;
+  --coran-fond: #f3ecd9;
+  --hadith-fond: #f6f1e6;
+  --ombre: 0 1px 2px rgba(60, 45, 20, .06), 0 8px 24px rgba(60, 45, 20, .06);
+  --menu-l: 330px;
+  --barre-h: 56px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #15130f; --fond-2: #1d1a14; --papier: #1b1813; --encre: #ece4d3; --encre-2: #c3b8a2; --encre-3: #8f856f;
+    --accent: #6fbfa3; --accent-2: #8fd4bb; --or: #d1ad5b; --or-clair: #5a4a26; --filet: #34302a;
+    --coran-fond: #221f18; --hadith-fond: #1f1c16; --ombre: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #15130f; --fond-2: #1d1a14; --papier: #1b1813; --encre: #ece4d3; --encre-2: #c3b8a2; --encre-3: #8f856f;
+  --accent: #6fbfa3; --accent-2: #8fd4bb; --or: #d1ad5b; --or-clair: #5a4a26; --filet: #34302a;
+  --coran-fond: #221f18; --hadith-fond: #1f1c16; --ombre: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: calc(var(--barre-h) + 16px); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--fond); color: var(--encre);
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+  font-size: var(--taille); line-height: 1.75;
+  padding-top: var(--barre-h);
+}
+a { color: var(--accent); }
+a:hover { color: var(--accent-2); }
+::selection { background: var(--or-clair); }
+
+/* ---------- Barre du haut ---------- */
+.barre {
+  position: fixed; inset: 0 0 auto 0; height: var(--barre-h); z-index: 40;
+  display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: color-mix(in srgb, var(--papier) 92%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--filet);
+  font-family: "Source Serif 4", Georgia, serif; font-size: 16px;
+}
+.barre-titre { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--encre); min-width: 0; flex: 1; }
+.barre-ar { font-family: "Amiri", serif; font-size: 22px; color: var(--accent); }
+.barre-fr { font-family: "Cormorant Garamond", serif; font-weight: 600; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.barre-outils { display: flex; gap: 4px; }
+.btn-icone {
+  border: 1px solid transparent; background: transparent; color: var(--encre-2);
+  height: 38px; min-width: 38px; padding: 0 8px; border-radius: 8px; cursor: pointer;
+  font: 600 15px "Source Serif 4", serif; display: inline-flex; align-items: center; justify-content: center;
+}
+.btn-icone:hover { background: var(--fond-2); color: var(--encre); }
+.btn-icone:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--or); outline-offset: 2px; }
+.progression { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--or); transition: width .1s linear; }
+
+/* ---------- Menu latéral ---------- */
+.menu {
+  position: fixed; top: var(--barre-h); bottom: 0; left: 0; width: var(--menu-l); z-index: 30;
+  background: var(--papier); border-right: 1px solid var(--filet);
+  overflow-y: auto; overscroll-behavior: contain; font-size: 15px; line-height: 1.45;
+  transform: translateX(-100%); transition: transform .25s ease;
+}
+.menu-ouvert .menu { transform: none; box-shadow: var(--ombre); }
+.voile { position: fixed; inset: var(--barre-h) 0 0 0; background: rgba(20, 15, 5, .35); z-index: 25; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.menu-ouvert .voile:not(.voile-mp) { opacity: 1; pointer-events: auto; }
+.menu-tete { position: sticky; top: 0; background: var(--papier); padding: 14px 14px 10px; border-bottom: 1px solid var(--filet); z-index: 1; }
+.menu-accueil { display: block; text-decoration: none; color: var(--encre-2); font-weight: 600; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; }
+.menu-accueil:hover, .menu-accueil.actif { background: var(--fond-2); color: var(--encre); }
+#menu-recherche {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--filet); border-radius: 8px;
+  background: var(--fond); color: var(--encre); font: inherit; font-size: 14px;
+}
+.menu-liste { list-style: none; margin: 0; padding: 8px 8px 40px; }
+.menu-liste > li > a {
+  display: block; text-decoration: none; color: var(--encre); padding: 9px 10px 9px 12px;
+  border-radius: 8px; border-left: 3px solid transparent;
+}
+.menu-liste > li > a:hover { background: var(--fond-2); }
+.menu-liste > li > a.actif { background: var(--fond-2); border-left-color: var(--or); }
+.menu-num { display: block; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--or); font-weight: 600; margin-bottom: 2px; }
+.menu-titre { display: block; }
+.menu-sous { list-style: none; margin: 2px 0 8px 14px; padding: 0 0 0 10px; border-left: 1px solid var(--filet); font-size: 14px; }
+.menu-sous a { display: block; padding: 4px 8px; color: var(--encre-2); text-decoration: none; border-radius: 6px; }
+.menu-sous a:hover { background: var(--fond-2); color: var(--encre); }
+
+@media (min-width: 1000px) {
+  .avec-menu .menu { transform: none; }
+  .avec-menu { padding-left: var(--menu-l); }
+  .avec-menu .voile:not(.voile-mp) { display: none; }
+  .avec-menu.menu-ouvert .menu { box-shadow: none; }
+  #btn-menu { display: none; }
+}
+
+/* ---------- Lecture ---------- */
+main { padding: 32px 16px 40px; }
+article { max-width: 760px; margin: 0 auto; }
+.entete { text-align: center; padding: 28px 0 30px; margin-bottom: 34px; border-bottom: 1px solid var(--filet); position: relative; }
+.entete::after {
+  content: "۞"; position: absolute; left: 50%; bottom: -0.8em; transform: translateX(-50%);
+  background: var(--fond); color: var(--or); padding: 0 14px; font-size: 22px; line-height: 1.6; font-family: "Amiri", serif;
+}
+.entete p { text-align: center; }
+.surtitre { margin: 0 0 10px; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--or); font-weight: 600; }
+.entete h1 {
+  font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: clamp(30px, 5vw, 42px);
+  line-height: 1.2; margin: 0 0 14px; color: var(--encre); text-wrap: balance;
+}
+.titre-ar { font-family: "Amiri", serif; font-size: clamp(24px, 4vw, 30px); color: var(--accent); margin: 0; line-height: 1.8; }
+
+article p { margin: 0 0 1.05em; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+article h2 {
+  font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 1.55em; line-height: 1.25;
+  color: var(--accent); margin: 2em 0 .8em; text-align: center; text-wrap: balance;
+}
+article h2::before { content: "❖"; display: block; font-size: .55em; color: var(--or); margin-bottom: .3em; }
+article h3 { font-family: "Cormorant Garamond", serif; font-size: 1.3em; color: var(--accent); margin: 1.6em 0 .6em; }
+article strong { font-weight: 600; }
+
+/* Arabe en ligne */
+.ar, [lang="ar"] { font-family: "Amiri", "Traditional Arabic", serif; }
+span.ar { font-size: 1.12em; line-height: 1; unicode-bidi: isolate; }
+
+/* Bloc arabe (verset, hadith, poème) */
+p.ar-bloc {
+  font-family: "Amiri", "Traditional Arabic", serif; direction: rtl; text-align: justify;
+  font-size: 1.42em; line-height: 2.05; color: var(--encre);
+  background: var(--hadith-fond); border-radius: 10px; padding: .75em 1em; margin: 1.3em 0 .55em;
+  border-right: 3px solid var(--or-clair);
+  text-align-last: right; hyphens: none;
+}
+p.ar-bloc.coran { background: var(--coran-fond); color: var(--accent); border-right-color: var(--or); }
+/* Poèmes : vers groupés, deux hémistiches par ligne sur grand écran */
+div.poeme {
+  font-family: "Amiri", "Traditional Arabic", serif; direction: rtl;
+  background: var(--hadith-fond); border-right: 3px solid var(--or-clair); border-radius: 10px;
+  padding: .8em 1.2em; margin: 1.3em 0 .55em; font-size: 1.32em; line-height: 2;
+  display: grid; grid-template-columns: 1fr; gap: 0 2.2em; text-align: center;
+}
+div.poeme.deux { grid-template-columns: 1fr 1fr; }
+div.poeme p.vers { margin: 0; text-align: center; text-align-last: center; hyphens: none; }
+div.poeme.deux p.vers:nth-child(odd) { text-align-last: right; text-align: right; }
+div.poeme.deux p.vers:nth-child(even) { text-align-last: left; text-align: left; }
+@media (max-width: 600px) {
+  div.poeme.deux { grid-template-columns: 1fr; }
+  div.poeme.deux p.vers:nth-child(odd), div.poeme.deux p.vers:nth-child(even) { text-align: center; text-align-last: center; }
+  div.poeme.deux p.vers:nth-child(even) { margin-bottom: .45em; }
+}
+p.trad-poeme { line-height: 1.8; }
+p.suite { margin-top: -.6em; }
+p.trad { color: var(--encre-2); font-style: italic; text-align: justify; margin: 0 0 1.4em; padding: 0 0 0 1em; border-left: 2px solid var(--or-clair); }
+p.trad-poeme { text-align: left; }
+
+blockquote {
+  margin: 1.4em 0; padding: .9em 1.2em; background: var(--hadith-fond);
+  border-left: 3px solid var(--or); border-radius: 0 10px 10px 0;
+}
+blockquote p:last-child { margin-bottom: 0; }
+blockquote p.ar-bloc { background: transparent; border: 0; padding: 0; margin: .2em 0 .4em; }
+blockquote p.trad { max-width: none; }
+article ul, article ol { padding-left: 1.4em; margin: 0 0 1.1em; }
+article li { margin-bottom: .45em; }
+article li p { margin-bottom: .4em; }
+
+/* ---------- Navigation bas de page ---------- */
+.pied-nav { max-width: 760px; margin: 50px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0; }
+.pn {
+  display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: var(--encre);
+  background: var(--papier); border: 1px solid var(--filet); border-radius: 12px; padding: 14px 16px;
+  font-size: 15px; line-height: 1.4; box-shadow: var(--ombre); transition: border-color .15s, transform .15s;
+}
+a.pn:hover { border-color: var(--or); color: var(--encre); transform: translateY(-1px); }
+.pn span { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--or); font-weight: 600; }
+.pn strong { font-weight: 500; }
+.pn-suiv { text-align: right; }
+.pn-attente { opacity: .75; box-shadow: none; }
+@media (max-width: 600px) { .pied-nav { grid-template-columns: 1fr; } .pn-suiv { text-align: left; } }
+
+.pied { text-align: center; color: var(--encre-3); font-size: 14px; padding: 40px 16px 30px; }
+.haut {
+  position: fixed; right: 16px; bottom: 16px; width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--filet); background: var(--papier); color: var(--encre-2); font-size: 20px;
+  box-shadow: var(--ombre); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20;
+}
+.haut.visible { opacity: 1; pointer-events: auto; }
+
+/* ---------- Accueil ---------- */
+.accueil { max-width: 880px; margin: 0 auto; }
+.hero { text-align: center; padding: 34px 0 30px; }
+.hero-ar { font-family: "Amiri", serif; font-size: clamp(34px, 7vw, 54px); color: var(--accent); line-height: 1.6; margin: 0; }
+.hero-ar-2 { font-family: "Amiri", serif; font-size: clamp(20px, 3.4vw, 26px); color: var(--encre-2); margin: 0 0 18px; }
+.hero h1 { font-family: "Cormorant Garamond", serif; font-weight: 600; font-size: clamp(30px, 5.5vw, 46px); line-height: 1.15; margin: 0 0 8px; text-wrap: balance; }
+.hero-sous { color: var(--encre-2); font-style: italic; margin: 0 0 6px; }
+.hero-auteur { margin: 18px 0 0; font-size: 16px; color: var(--encre-2); }
+.hero-auteur strong { color: var(--encre); font-weight: 600; }
+.fleuron { color: var(--or); font-size: 22px; letter-spacing: .6em; margin: 22px 0; font-family: "Amiri", serif; }
+.actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+.bouton {
+  display: inline-block; text-decoration: none; padding: 11px 22px; border-radius: 999px; font-size: 16px; font-weight: 600;
+  background: var(--accent); color: var(--papier); border: 1px solid var(--accent);
+}
+.bouton:hover { background: var(--accent-2); color: var(--papier); }
+.bouton-second { background: transparent; color: var(--accent); }
+.bouton-second:hover { background: var(--fond-2); color: var(--accent); }
+
+.carte { background: var(--papier); border: 1px solid var(--filet); border-radius: 14px; padding: 22px 24px; box-shadow: var(--ombre); margin: 0 0 22px; }
+.carte h2 { font-family: "Cormorant Garamond", serif; font-size: 26px; margin: 0 0 10px; color: var(--accent); }
+.carte p { margin: 0 0 .8em; text-align: justify; hyphens: auto; }
+.carte p:last-child { margin-bottom: 0; }
+.etat-ligne { display: flex; justify-content: space-between; font-size: 15px; color: var(--encre-2); margin-bottom: 6px; }
+.etat-barre { height: 8px; border-radius: 99px; background: var(--fond-2); overflow: hidden; }
+.etat-barre span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--or)); border-radius: 99px; }
+#dernier-ajout { font-size: 15px; color: var(--encre-2); margin-top: 12px; }
+
+.sommaire-titre { font-family: "Cormorant Garamond", serif; font-size: 32px; text-align: center; margin: 40px 0 18px; }
+.table { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.table a {
+  display: flex; gap: 14px; align-items: flex-start; text-decoration: none; color: var(--encre);
+  background: var(--papier); border: 1px solid var(--filet); border-radius: 12px; padding: 14px 16px;
+  transition: border-color .15s, transform .15s;
+}
+.table a:hover { border-color: var(--or); color: var(--encre); transform: translateY(-1px); }
+.t-num {
+  flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--or-clair); color: var(--or); font-weight: 600; font-size: 16px; background: var(--fond);
+}
+.t-txt { display: flex; flex-direction: column; min-width: 0; }
+.t-lib { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--or); font-weight: 600; }
+.t-titre { font-size: 17px; line-height: 1.45; }
+.t-ar { font-family: "Amiri", serif; color: var(--accent); font-size: 19px; line-height: 1.7; margin-top: 2px; }
+
+/* ---------- Marque-pages et suivi de lecture ---------- */
+#btn-marques { position: relative; }
+#btn-marques.plein .mp-ico { fill: var(--or); stroke: var(--or); }
+.mp-compte {
+  position: absolute; top: 2px; right: 0; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 99px;
+  background: var(--or); color: var(--papier); font: 700 10.5px/17px "Source Serif 4", serif; text-align: center;
+}
+.statut { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: 1px; }
+.statut:empty { display: none; }
+.st { font-size: 10.5px; letter-spacing: .04em; text-transform: none; font-weight: 600; padding: 1px 7px; border-radius: 99px; line-height: 1.5; white-space: nowrap; }
+.st-lu { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.st-cours { background: color-mix(in srgb, var(--or) 18%, transparent); color: var(--or); }
+.st-mp { background: var(--fond-2); color: var(--encre-2); }
+
+.panneau-mp {
+  position: fixed; top: var(--barre-h); right: 0; bottom: 0; width: min(400px, 100vw); z-index: 35;
+  background: var(--papier); border-left: 1px solid var(--filet); box-shadow: var(--ombre);
+  overflow-y: auto; overscroll-behavior: contain; font-size: 15px; line-height: 1.5;
+  transform: translateX(102%); transition: transform .25s ease; visibility: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.mp-ouvert .panneau-mp { transform: none; visibility: visible; }
+.voile-mp { z-index: 34; }
+.mp-ouvert .voile-mp { opacity: 1; pointer-events: auto; }
+.mp-tete { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 12px 18px; background: var(--papier); border-bottom: 1px solid var(--filet); }
+.mp-tete h2 { margin: 0; font-family: "Cormorant Garamond", serif; font-size: 24px; color: var(--accent); }
+.mp-ajout { padding: 14px 18px; border-bottom: 1px solid var(--filet); display: grid; gap: 8px; }
+.mp-aide { margin: 0; color: var(--encre-2); font-size: 14px; }
+#mp-note { width: 100%; padding: 9px 12px; border: 1px solid var(--filet); border-radius: 8px; background: var(--fond); color: var(--encre); font: inherit; font-size: 15px; }
+.mp-ajout .bouton, .mp-pied .bouton { text-align: center; cursor: pointer; font-family: inherit; font-size: 15px; padding: 10px 16px; }
+.mp-vide { padding: 18px; color: var(--encre-2); margin: 0; }
+.mp-liste { list-style: none; margin: 0; padding: 8px 10px; }
+.mp-groupe { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--or); font-weight: 600; padding: 12px 8px 4px; }
+.mp-item { display: flex; align-items: flex-start; gap: 4px; border-radius: 10px; }
+.mp-item:hover { background: var(--fond-2); }
+.mp-item a { flex: 1; min-width: 0; display: grid; gap: 2px; padding: 8px; text-decoration: none; color: var(--encre); }
+.mp-note { font-weight: 600; color: var(--accent); }
+.mp-extrait { color: var(--encre-2); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.mp-date { font-size: 12px; color: var(--encre-3); }
+.mp-suppr { flex: none; border: 0; background: transparent; color: var(--encre-3); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 4px; }
+.mp-suppr:hover { background: var(--papier); color: #b0412e; }
+.mp-pied { padding: 14px 18px 22px; border-top: 1px solid var(--filet); font-size: 13.5px; color: var(--encre-2); }
+.mp-pied p { margin: 0 0 10px; }
+.mp-pied-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.mp-msg { margin: 10px 0 0 !important; color: var(--accent); min-height: 1.2em; }
+
+article [data-bloc] { scroll-margin-top: calc(var(--barre-h) + 16px); }
+article .bloc-marque { position: relative; }
+article .bloc-marque::before {
+  content: ""; position: absolute; left: -22px; top: .35em; width: 10px; height: 16px;
+  background: var(--or); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%);
+}
+article .bloc-flash { animation: flash 1.8s ease; }
+@keyframes flash { 0%, 40% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--or) 30%, transparent); background-color: color-mix(in srgb, var(--or) 14%, transparent); } 100% { box-shadow: 0 0 0 6px transparent; } }
+
+.fin-lecture { max-width: 760px; margin: 40px auto 0; display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; text-align: center; }
+.fin-lecture .bouton { cursor: pointer; font-family: inherit; }
+.fin-ok { color: var(--accent); font-weight: 600; }
+.lien-bouton { border: 0; background: none; color: var(--encre-3); text-decoration: underline; cursor: pointer; font: inherit; font-size: 14px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 50;
+  transform: translate(-50%, 140%); opacity: 0; transition: transform .3s ease, opacity .3s;
+  display: flex; align-items: center; gap: 10px; width: max-content; max-width: calc(100vw - 24px);
+  background: var(--papier); border: 1px solid var(--filet); border-radius: 14px; box-shadow: var(--ombre);
+  padding: 10px 10px 10px 16px; font-size: 15px; line-height: 1.4;
+}
+.toast.visible { transform: translate(-50%, 0); opacity: 1; }
+.toast .bouton { padding: 8px 16px; font-size: 14.5px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+.ml-reprise { margin: 12px 0 0 !important; font-size: 15.5px; text-align: left !important; }
+.ml-titre { font-family: "Cormorant Garamond", serif; font-size: 20px; margin: 18px 0 6px; color: var(--encre); }
+.ml-liste { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; }
+.ml-liste a { display: grid; gap: 2px; padding: 9px 12px; border: 1px solid var(--filet); border-radius: 10px; text-decoration: none; color: var(--encre); background: var(--fond); }
+.ml-liste a:hover { border-color: var(--or); }
+.ml-lib { font-size: 13px; font-weight: 600; color: var(--or); }
+.ml-ext { font-size: 14px; color: var(--encre-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ml-tous { cursor: pointer; font-family: inherit; margin-top: 12px; }
+
+
+.mp-reinit { padding: 14px 18px 26px; border-top: 1px solid var(--filet); }
+.mp-reinit h3 { margin: 0 0 8px; font-family: "Cormorant Garamond", serif; font-size: 19px; color: var(--encre); }
+.reinit { padding: 5px 0; font-size: 14px; }
+.reinit .lien-bouton { text-align: left; color: #a3402c; }
+.reinit-non.lien-bouton { color: var(--encre-3); }
+.reinit-confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--encre); }
+.reinit-confirm[hidden] { display: none; }
+.reinit-oui.bouton { background: #a3402c; border-color: #a3402c; color: #fff; padding: 6px 14px; font-size: 14px; font-family: inherit; }
+.reinit-oui.bouton:hover { background: #8a3424; color: #fff; }
+.ml-reinit { margin-top: 16px; font-size: 14.5px; }
+.ml-reinit summary { cursor: pointer; color: var(--encre-3); }
+.ml-reinit[open] summary { margin-bottom: 6px; }
+
+/* ---------- Adaptation aux écrans (PC, tablettes, smartphones) ---------- */
+img, svg, video { max-width: 100%; height: auto; }
+article { overflow-wrap: break-word; }
+article table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+article td, article th { border: 1px solid var(--filet); padding: 6px 10px; }
+.barre { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+.haut { bottom: calc(16px + env(safe-area-inset-bottom)); right: max(16px, env(safe-area-inset-right)); }
+.menu { width: min(var(--menu-l), 86vw); padding-bottom: env(safe-area-inset-bottom); }
+.bouton { cursor: pointer; }
+@media (hover: none) {
+  a.pn:hover, .table a:hover { transform: none; }
+}
+
+/* Grands écrans */
+@media (min-width: 1400px) {
+  :root { --menu-l: 360px; }
+  article, .pied-nav, .fin-lecture { max-width: 800px; }
+  main { padding-top: 44px; }
+}
+/* Tablettes (portrait et paysage) */
+@media (min-width: 601px) and (max-width: 999px) {
+  main { padding: 32px 32px 40px; }
+  .table { grid-template-columns: 1fr 1fr; }
+}
+/* Menu fixe à gauche mais panneau des marque-pages au-dessus */
+@media (min-width: 1000px) {
+  .panneau-mp { width: 400px; }
+}
+/* Smartphones */
+@media (max-width: 600px) {
+  :root { --taille: 17.5px; --barre-h: 52px; }
+  main { padding: 22px 16px 32px; }
+  .entete { padding: 14px 0 24px; margin-bottom: 28px; }
+  .barre { gap: 4px; }
+  .barre-outils { gap: 0; }
+  .btn-icone { min-width: 36px; height: 36px; padding: 0 6px; font-size: 14px; }
+  .hero { padding: 18px 0 22px; }
+  .sommaire-titre { font-size: 28px; margin-top: 30px; }
+  .table a { padding: 12px; gap: 12px; }
+  .t-num { width: 34px; height: 34px; font-size: 14px; }
+  .t-titre { font-size: 16px; }
+  .toast { left: 12px; right: 12px; width: auto; transform: translateY(140%); }
+  .toast.visible { transform: none; }
+  .toast span { flex: 1; font-size: 14px; }
+  article .bloc-marque::before { left: -13px; width: 8px; height: 13px; }
+  div.poeme { padding: .7em .8em; font-size: 1.24em; }
+  blockquote { padding: .8em .9em; }
+  .pied-nav { margin-top: 36px; }
+}
+@media (max-width: 520px) {
+  body { line-height: 1.7; }
+  .barre-fr { display: none; }
+  .carte { padding: 18px 16px; }
+  p.ar-bloc { font-size: 1.3em; padding: .6em .7em; }
+  article p { text-align: left; }
+  article p.ar-bloc { text-align: right; }
+  article p.trad { text-align: left; }
+}
+/* Très petits écrans */
+@media (max-width: 360px) {
+  .barre-ar { font-size: 19px; }
+  .btn-icone { min-width: 32px; padding: 0 4px; }
+  .actions .bouton { width: 100%; text-align: center; }
+}
+/* Téléphone en paysage : barre plus fine */
+@media (max-height: 480px) and (orientation: landscape) {
+  :root { --barre-h: 46px; }
+  .btn-icone { height: 34px; }
+}
+@media print {
+  .barre, .menu, .voile, .pied-nav, .haut, .panneau-mp, .toast, .fin-lecture { display: none !important; }
+  body, .avec-menu { padding: 0; background: #fff; }
+  article .bloc-marque::before { display: none; }
+}
+
+/* Mention sous chaque traduction de verset */
+p.ar-bloc.coran + p.trad::after {
+  content: "Traduction rapprochée du sens";
+  display: block;
+  margin-top: .35em;
+  font-size: .75em;
+  font-style: normal;
+  letter-spacing: .02em;
+  color: var(--encre-3);
+}

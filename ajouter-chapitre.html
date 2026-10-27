@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Préparer un chapitre — Iʿânat al-Mustafîd</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css">
+<style>
+  .outil { max-width: 860px; margin: 0 auto; }
+  .outil h1 { font-family: "Cormorant Garamond", serif; font-size: 38px; text-align: center; margin: 10px 0 6px; }
+  .outil .intro { text-align: center; color: var(--encre-2); margin: 0 0 24px; }
+  .champs { display: grid; grid-template-columns: 110px 1fr; gap: 12px 14px; align-items: center; }
+  .champs label { font-size: 15px; color: var(--encre-2); font-weight: 600; }
+  .champs input[type=text], .champs input[type=number] {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--filet); border-radius: 8px; background: var(--fond); color: var(--encre); font: inherit; font-size: 16px;
+  }
+  #titreAr { font-family: "Amiri", serif; font-size: 20px; direction: rtl; }
+  .zone {
+    min-height: 160px; max-height: 320px; overflow: auto; border: 2px dashed var(--filet); border-radius: 12px; padding: 14px;
+    background: var(--fond); font-size: 15px; line-height: 1.6; outline: none;
+  }
+  .zone:empty::before { content: attr(data-vide); color: var(--encre-3); }
+  .zone:focus { border-color: var(--or); }
+  .ligne-boutons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+  button.bouton { cursor: pointer; font-family: inherit; }
+  .fichier { font-size: 15px; }
+  #code { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; padding: 10px; border-radius: 8px; border: 1px solid var(--filet); background: var(--fond); color: var(--encre); resize: vertical; }
+  .message { font-size: 15px; color: var(--accent); margin: 10px 0 0; min-height: 1.4em; }
+  .apercu-titre { font-family: "Cormorant Garamond", serif; font-size: 28px; text-align: center; margin: 36px 0 10px; color: var(--encre-2); }
+  #apercu { background: var(--fond); border: 1px solid var(--filet); border-radius: 14px; padding: 10px 20px 30px; }
+  .etape { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--or); font-weight: 700; margin: 0 0 6px; }
+  @media (max-width: 560px) { .champs { grid-template-columns: 1fr; gap: 6px; } }
+</style>
+</head>
+<body>
+<main>
+<div class="outil">
+  <h1>Préparer un nouveau chapitre</h1>
+  <p class="intro">Déposez le fichier Word du chapitre (ou collez son texte) : la page est mise en forme comme les autres, prête à être déposée sur GitHub.</p>
+
+  <section class="carte">
+    <p class="etape">1 · Le chapitre</p>
+    <div class="champs">
+      <label for="numero">Numéro</label><input type="number" id="numero" min="1" max="66">
+      <label for="titre">Titre complet</label><input type="text" id="titre" placeholder="Titre complet du chapitre en français">
+      <label for="titreAr">Titre arabe</label><input type="text" id="titreAr" placeholder="باب ..." dir="rtl" lang="ar">
+    </div>
+  </section>
+
+  <section class="carte">
+    <p class="etape">2 · Le texte</p>
+    <div class="ligne-boutons" style="margin:0 0 12px">
+      <input class="fichier" type="file" id="fichier" accept=".docx,.html,.htm,.txt">
+    </div>
+    <div class="zone" id="zone" contenteditable="true" data-vide="… ou collez ici le texte du chapitre (copié depuis Word, Google Docs, etc.)"></div>
+    <div class="ligne-boutons">
+      <button class="bouton" id="btn-former">Mettre en forme</button>
+      <button class="bouton bouton-second" id="btn-vider">Vider</button>
+    </div>
+    <p class="message" id="message"></p>
+  </section>
+
+  <section class="carte" id="resultat" hidden>
+    <p class="etape">3 · Publier</p>
+    <p>① Téléchargez la page et déposez-la sur GitHub (bouton <em>Add file → Upload files</em>) :</p>
+    <div class="ligne-boutons" style="margin:0 0 18px"><button class="bouton" id="btn-telecharger">Télécharger</button></div>
+    <p>② Ouvrez <code>sommaire.js</code> sur GitHub (crayon ✎) et ajoutez cette ligne à la fin de la liste, à l'endroit indiqué :</p>
+    <textarea id="code" rows="2" readonly></textarea>
+    <div class="ligne-boutons"><button class="bouton bouton-second" id="btn-copier">Copier la ligne</button></div>
+  </section>
+
+  <h2 class="apercu-titre" id="apercu-titre" hidden>Aperçu</h2>
+  <div id="apercu" hidden><article id="article-apercu"></article></div>
+</div>
+</main>
+<footer class="pied">Iʿânat al-Mustafîd bi-charh Kitâb at-Tawhîd — traduction française</footer>
+<script src="sommaire.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var zone = $("zone"), msg = $("message"), fichierNom = "";
+  var nums = (window.KTT ? KTT.PAGES : []).map(function (p) { return p.numero || 0; });
+  $("numero").value = (nums.length ? Math.max.apply(null, nums) : 0) + 1;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function deux(n) { n = parseInt(n, 10) || 0; return (n < 10 ? "0" : "") + n; }
+
+  function texteVersHtml(t) {
+    return t.replace(/\r/g, "").split(/\n/).map(function (l) { return l.trim() ? "<p>" + esc(l.trim()) + "</p>" : ""; }).join("");
+  }
+
+  $("fichier").addEventListener("change", function () {
+    var f = this.files[0]; if (!f) return;
+    fichierNom = f.name; msg.textContent = "Lecture de « " + f.name + " »…";
+    var r = new FileReader();
+    if (/\.docx$/i.test(f.name)) {
+      r.onload = function () {
+        if (!window.mammoth) { msg.textContent = "Impossible de lire le fichier Word (connexion internet nécessaire). Copiez-collez plutôt le texte."; return; }
+        mammoth.convertToHtml({ arrayBuffer: r.result }).then(function (res) {
+          zone.innerHTML = res.value; msg.textContent = "Fichier Word chargé. Cliquez sur « Mettre en forme ».";
+          devinerTitre();
+        }).catch(function () { msg.textContent = "Ce fichier Word n'a pas pu être lu."; });
+      };
+      r.readAsArrayBuffer(f);
+    } else {
+      r.onload = function () {
+        var t = r.result;
+        if (/\.html?$/i.test(f.name)) {
+          var d = new DOMParser().parseFromString(t, "text/html");
+          var a = d.querySelector("article") || d.body;
+          zone.innerHTML = a.innerHTML;
+        } else zone.innerHTML = texteVersHtml(t);
+        msg.textContent = "Fichier chargé. Cliquez sur « Mettre en forme ».";
+        devinerTitre();
+      };
+      r.readAsText(f, "utf-8");
+    }
+  });
+
+  /* Collage de texte brut : un paragraphe par ligne */
+  zone.addEventListener("paste", function (e) {
+    var cd = e.clipboardData; if (!cd) return;
+    var h = cd.getData("text/html"), t = cd.getData("text/plain");
+    e.preventDefault();
+    zone.innerHTML += h ? h.replace(/^[\s\S]*<body[^>]*>|<\/body>[\s\S]*$/gi, "") : texteVersHtml(t);
+    devinerTitre();
+  });
+
+  /* Le titre du chapitre est souvent la première ligne du fichier */
+  function devinerTitre() {
+    var nomNum = fichierNom.match(/chapitre\s*(\d+)/i);
+    if (nomNum) $("numero").value = parseInt(nomNum[1], 10);
+    if ($("titre").value.trim()) return;
+    var premier = zone.querySelector("h1,h2,h3,p");
+    if (premier) {
+      var t = premier.textContent.replace(/\s+/g, " ").trim().replace(/^chapitre\s*\d+\s*[:·.\-–_]?\s*/i, "");
+      if (t.length < 220 && !/[؀-ۿ]/.test(t)) $("titre").value = t;
+    }
+  }
+
+  $("btn-vider").onclick = function () { zone.innerHTML = ""; $("resultat").hidden = true; $("apercu").hidden = $("apercu-titre").hidden = true; msg.textContent = ""; fichierNom = ""; $("fichier").value = ""; };
+
+  var pageHtml = "", page = null;
+  $("btn-former").onclick = function () {
+    var n = parseInt($("numero").value, 10), titre = $("titre").value.trim(), titreAr = $("titreAr").value.trim();
+    if (!n) { msg.textContent = "Indiquez le numéro du chapitre."; return; }
+    if (!titre) { msg.textContent = "Indiquez le titre complet du chapitre."; return; }
+    if (!zone.textContent.trim()) { msg.textContent = "Ajoutez d'abord le texte du chapitre."; return; }
+    page = { fichier: "chapitre-" + deux(n) + ".html", numero: n, titre: titre, titreAr: titreAr };
+
+    var art = $("article-apercu");
+    art.removeAttribute("data-normalise");
+    art.innerHTML = zone.innerHTML;
+    KTT.normaliser(art, page);
+
+    var corps = art.innerHTML.replace(/(<\/(p|h2|h3|div|ul|ol|li|header)>)/g, "$1\n").replace(/\n{2,}/g, "\n");
+    pageHtml = '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+      '<title>' + esc(KTT.typo(titre)) + ' — Iʿânat al-Mustafîd</title>\n<link rel="stylesheet" href="style.css">\n</head>\n<body>\n<main>\n' +
+      '<article data-normalise="1">\n' + corps + '\n</article>\n</main>\n' +
+      '<footer class="pied">Iʿânat al-Mustafîd bi-charh Kitâb at-Tawhîd — traduction française</footer>\n<script src="sommaire.js"><\/script>\n</body>\n</html>\n';
+
+    var js = function (s) { return JSON.stringify(s); };
+    $("code").value = '  { fichier: ' + js(page.fichier) + ', numero: ' + n + ', titre: ' + js(titre) + (titreAr ? ', titreAr: ' + js(titreAr) : "") + ' },';
+    $("btn-telecharger").textContent = "Télécharger " + page.fichier;
+    $("resultat").hidden = false; $("apercu").hidden = $("apercu-titre").hidden = false;
+    msg.textContent = "Mise en forme terminée : vérifiez l'aperçu ci-dessous.";
+    $("resultat").scrollIntoView({ behavior: "smooth" });
+  };
+
+  $("btn-telecharger").onclick = function () {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([pageHtml], { type: "text/html;charset=utf-8" }));
+    a.download = page.fichier; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  };
+  $("btn-copier").onclick = function () {
+    var c = $("code"); c.select();
+    try { navigator.clipboard.writeText(c.value); } catch (e) { document.execCommand("copy"); }
+    this.textContent = "Copié ✓"; var b = this; setTimeout(function () { b.textContent = "Copier la ligne"; }, 1500);
+  };
+})();
+</script>
+</body>
+</html>
